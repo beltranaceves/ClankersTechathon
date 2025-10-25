@@ -176,7 +176,7 @@
                     position="0 0 0"
                     scale="150 150 150"
                     rotation="0 0 0"
-                    gltf-model="/Painted_Rock.glb"
+                    gltf-model="/Painted_Rock_rc1.glb"
                 ></a-entity>
             </a-marker>
             <a-entity camera></a-entity>
@@ -241,20 +241,28 @@
             
             // Reset to defaults
             resetBtn.addEventListener('click', () => {
-                Object.keys(defaults).forEach(key => {
-                    const slider = document.querySelector(`#${key.replace(/[A-Z]/g, letter => letter.toLowerCase())}Slider`);
-                    const value = document.querySelector(`#${key.replace(/[A-Z]/g, letter => letter.toLowerCase())}Value`);
-                    if (slider) {
-                        slider.value = defaults[key];
-                        if (key === 'scale') {
-                            value.textContent = defaults[key];
-                        } else if (key.startsWith('pos')) {
-                            value.textContent = defaults[key].toFixed(1);
-                        } else {
-                            value.textContent = defaults[key] + '°';
-                        }
-                    }
-                });
+                // Direct mapping instead of string manipulation
+                scaleSlider.value = defaults.scale;
+                scaleValue.textContent = defaults.scale;
+                
+                posXSlider.value = defaults.posX;
+                posXValue.textContent = defaults.posX.toFixed(1);
+                
+                posYSlider.value = defaults.posY;
+                posYValue.textContent = defaults.posY.toFixed(1);
+                
+                posZSlider.value = defaults.posZ;
+                posZValue.textContent = defaults.posZ.toFixed(1);
+                
+                rotXSlider.value = defaults.rotX;
+                rotXValue.textContent = defaults.rotX + '°';
+                
+                rotYSlider.value = defaults.rotY;
+                rotYValue.textContent = defaults.rotY + '°';
+                
+                rotZSlider.value = defaults.rotZ;
+                rotZValue.textContent = defaults.rotZ + '°';
+                
                 updateModel();
             });
             
