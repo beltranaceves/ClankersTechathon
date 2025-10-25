@@ -105,6 +105,18 @@
             margin-top: 10px;
             width: 100%;
         }
+        
+        .tracking-info {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 1002;
+        }
     </style>
     <body>
         <button class="toggle-btn" id="toggleBtn">⚙️</button>
@@ -169,10 +181,17 @@
             <button class="reset-btn" id="resetBtn">Reset to Default</button>
         </div>
         
-        <a-scene embedded arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3 ">
+        <div class="tracking-info" id="trackingInfo">
+            Tracking: <span id="trackingStatus">Initializing...</span><br>
+            Active Markers: <span id="activeMarkers">0</span><br>
+            Confidence: <span id="confidence">0%</span>
+        </div>
+        
+        <a-scene embedded arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3; maxDetectionRate: 60;">
+            <!-- Main Hiro marker with your 3D model -->
             <a-marker 
-                type="barcode"
-                value="0"
+                preset="hiro"
+                id="hiro-marker"
                 smooth="true"
                 smoothCount="10"
                 smoothTolerance="0.01"
@@ -186,10 +205,184 @@
                     gltf-model="/Painted_Rock_rc1.glb"
                 ></a-entity>
             </a-marker>
+            
+            <!-- Helper Kanji marker for improved tracking -->
+            <a-marker 
+                preset="kanji"
+                id="kanji-marker"
+                smooth="true"
+                smoothCount="15"
+                smoothTolerance="0.005">
+                <!-- Invisible helper box for position reference -->
+                <a-box id="kanji-helper" visible="false" scale="0.1 0.1 0.1"></a-box>
+            </a-marker>
+            
             <a-entity camera></a-entity>
         </a-scene>
         
         <script>
+            // Dual-marker tracking system for Hiro + Kanji
+            class DualMarkerTracker {
+                constructor() {
+                    this.hiroMarker = null;
+                    this.kanjiMarker = null;
+                    this.hiroVisible = false;
+                    this.kanjiVisible = false;
+                    this.lastStablePosition = null;
+                    this.lastStableRotation = null;
+                    this.confidenceLevel = 0;
+                    this.smoothingFactor = 0.15;
+                    this.isTracking = false;
+                    
+                    // UI elements
+                    this.trackingInfo = document.querySelector('#trackingStatus');
+                    this.activeMarkersInfo = document.querySelector('#activeMarkers');
+                    this.confidenceInfo = document.querySelector('#confidence');
+                }
+                
+                init() {
+                    this.hiroMarker = document.querySelector('#hiro-marker');
+                    this.kanjiMarker = document.querySelector('#kanji-marker');
+                    
+                    if (this.hiroMarker) {
+                        this.hiroMarker.addEventListener('markerFound', () => {
+                            console.log('Hiro marker found');
+                            this.hiroVisible = true;
+                            this.updateTracking();
+                        });
+                        
+                        this.hiroMarker.addEventListener('markerLost', () => {
+                            console.log('Hiro marker lost');
+                            this.hiroVisible = false;
+                            this.updateTracking();
+                        });
+                    }
+                    
+                    if (this.kanjiMarker) {
+                        this.kanjiMarker.addEventListener('markerFound', () => {
+                            console.log('Kanji marker found');
+                            this.kanjiVisible = true;
+                            this.updateTracking();
+                        });
+                        
+                        this.kanjiMarker.addEventListener('markerLost', () => {
+                            console.log('Kanji marker lost');
+                            this.kanjiVisible = false;
+                            this.updateTracking();
+                        });
+                    }
+                }
+                
+                updateTracking() {
+                    const activeCount = (this.hiroVisible ? 1 : 0) + (this.kanjiVisible ? 1 : 0);
+                    
+                    // Update UI
+                    this.activeMarkersInfo.textContent = activeCount;
+                    
+                    if (activeCount === 0) {
+                        this.trackingInfo.textContent = 'No markers detected';
+                        this.confidenceLevel = 0;
+                        this.isTracking = false;
+                    } else if (this.hiroVisible && this.kanjiVisible) {
+                        // Both markers visible - highest stability
+                        this.trackingInfo.textContent = 'Dual-marker tracking (Hiro + Kanji)';
+                        this.confidenceLevel = 1.0;
+                        this.isTracking = true;
+                        this.applyDualMarkerTracking();
+                    } else if (this.hiroVisible) {
+                        // Only Hiro visible - normal tracking
+                        this.trackingInfo.textContent = 'Single marker tracking (Hiro)';
+                        this.confidenceLevel = 0.8;
+                        this.isTracking = true;
+                        this.applyHiroTracking();
+                    } else if (this.kanjiVisible) {
+                        // Only Kanji visible - helper tracking
+                        this.trackingInfo.textContent = 'Helper tracking (Kanji)';
+                        this.confidenceLevel = 0.6;
+                        this.isTracking = true;
+                        this.applyKanjiHelperTracking();
+                    }
+                    
+                    this.confidenceInfo.textContent = Math.round(this.confidenceLevel * 100) + '%';
+                }
+                
+                applyHiroTracking() {
+                    // Standard single marker tracking with Hiro
+                    const position = this.hiroMarker.object3D.position.clone();
+                    const rotation = this.hiroMarker.object3D.rotation.clone();
+                    
+                    this.applySmoothing(position, rotation, this.smoothingFactor);
+                    this.lastStablePosition = position;
+                    this.lastStableRotation = rotation;
+                }
+                
+                applyDualMarkerTracking() {
+                    // Enhanced tracking using both markers
+                    const hiroPos = this.hiroMarker.object3D.position.clone();
+                    const hiroRot = this.hiroMarker.object3D.rotation.clone();
+                    const kanjiPos = this.kanjiMarker.object3D.position.clone();
+                    const kanjiRot = this.kanjiMarker.object3D.rotation.clone();
+                    
+                    // Weight Hiro more heavily as it's the primary marker
+                    const hiroWeight = 0.7;
+                    const kanjiWeight = 0.3;
+                    
+                    // Calculate weighted average position
+                    const avgPosition = new THREE.Vector3();
+                    avgPosition.addScaledVector(hiroPos, hiroWeight);
+                    avgPosition.addScaledVector(kanjiPos, kanjiWeight);
+                    
+                    // For rotation, primarily use Hiro with slight influence from Kanji
+                    const avgRotation = new THREE.Euler();
+                    avgRotation.x = hiroRot.x * hiroWeight + kanjiRot.x * kanjiWeight;
+                    avgRotation.y = hiroRot.y * hiroWeight + kanjiRot.y * kanjiWeight;
+                    avgRotation.z = hiroRot.z * hiroWeight + kanjiRot.z * kanjiWeight;
+                    
+                    // Apply enhanced smoothing for dual-marker tracking
+                    this.applySmoothing(avgPosition, avgRotation, this.smoothingFactor * 0.7);
+                    this.lastStablePosition = avgPosition;
+                    this.lastStableRotation = avgRotation;
+                }
+                
+                applyKanjiHelperTracking() {
+                    // Use Kanji as backup when Hiro is lost
+                    const position = this.kanjiMarker.object3D.position.clone();
+                    const rotation = this.kanjiMarker.object3D.rotation.clone();
+                    
+                    // Apply more aggressive smoothing when using helper
+                    this.applySmoothing(position, rotation, this.smoothingFactor * 1.5);
+                    
+                    // Don't update stable position as aggressively with helper
+                    if (!this.lastStablePosition) {
+                        this.lastStablePosition = position;
+                        this.lastStableRotation = rotation;
+                    }
+                }
+                
+                applySmoothing(targetPos, targetRot, smoothFactor) {
+                    if (!model) return;
+                    
+                    const currentPos = model.object3D.position;
+                    const currentRot = model.object3D.rotation;
+                    
+                    // Apply position smoothing
+                    currentPos.lerp(targetPos, smoothFactor);
+                    
+                    // Apply rotation smoothing
+                    currentRot.x = this.lerpAngle(currentRot.x, targetRot.x, smoothFactor);
+                    currentRot.y = this.lerpAngle(currentRot.y, targetRot.y, smoothFactor);
+                    currentRot.z = this.lerpAngle(currentRot.z, targetRot.z, smoothFactor);
+                }
+                
+                lerpAngle(a, b, t) {
+                    const diff = ((b - a + Math.PI) % (2 * Math.PI)) - Math.PI;
+                    return a + diff * t;
+                }
+            }
+            
+            // Initialize the dual-marker tracker
+            const dualTracker = new DualMarkerTracker();
+            
             // Get references to DOM elements
             const model = document.querySelector('#model');
             const toggleBtn = document.querySelector('#toggleBtn');
@@ -228,6 +421,12 @@
                 rotZ: 0
             };
             
+            // Wait for scene to load
+            document.querySelector('a-scene').addEventListener('loaded', () => {
+                console.log('Scene loaded, initializing dual-marker tracking...');
+                dualTracker.init();
+            });
+            
             // Debounce function for performance
             function debounce(func, wait) {
                 let timeout;
@@ -248,7 +447,6 @@
             
             // Reset to defaults
             resetBtn.addEventListener('click', () => {
-                // Direct mapping instead of string manipulation
                 scaleSlider.value = defaults.scale;
                 scaleValue.textContent = defaults.scale;
                 
