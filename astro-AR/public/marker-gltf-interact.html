@@ -155,7 +155,7 @@
     <body>
         <button class="toggle-btn" id="toggleBtn">⚙️</button>
         
-        <button class="stories-btn" id="storiesBtn">📖 Show Stories</button>
+        <button class="stories-btn" id="storiesBtn" onclick="play()">📖 Show Stories</button>
         
         <div class="controls" id="controls">
             <div class="control-group">
@@ -372,6 +372,10 @@
                 };
             }
             
+            function play() {
+            var audio = new Audio('Star_Wars.mp3');
+            audio.play();
+            }
             // Toggle controls visibility
             toggleBtn.addEventListener('click', () => {
                 controls.style.display = controls.style.display === 'none' ? 'block' : 'none';
