@@ -252,7 +252,7 @@
                         img.setAttribute('width', this.data.size);
                         img.setAttribute('height', this.data.size);
                         // flat = unlit (good for UI), transparent for PNGs
-                        img.setAttribute('material', 'shader: flat; transparent: true; alphaTest: 0.01; color: #FFFFFF');
+                        img.setAttribute('material', 'shader: flat; transparent: true; alphaTest: 0.01; color: #FFFFFF; side: front');
                         this.el.appendChild(img);
                     });
 
@@ -326,6 +326,7 @@
                     material="color: rgba(255,255,255,0.9); opacity: 1"
                     visible="true"
                     text="zOffset: 0.02"
+                    frame-corners="srcTL: #TL; srcTR: #TR; srcBL: #BL; srcBR: #BR; inset: 0.2; size: 2; z: 0.03"
                     >
                 </a-text>
 
@@ -344,6 +345,7 @@
                     material="color: rgba(255,255,255,0.9); opacity: 1"
                     visible="true"
                     text="zOffset: 0.02"
+                    frame-corners="srcTL: #TL; srcTR: #TR; srcBL: #BL; srcBR: #BR; inset: 0.2; size: 2; z: 0.03"
                     >
                 </a-text>
 
@@ -362,6 +364,7 @@
                     material="color: rgba(255,255,255,0.9); opacity: 1"
                     visible="true"
                     text="zOffset: 0.04"
+                    frame-corners="srcTL: #TL; srcTR: #TR; srcBL: #BL; srcBR: #BR; inset: 0.2; size: 2; z: 0.03"
                     >
                 </a-text>
             </a-marker>
