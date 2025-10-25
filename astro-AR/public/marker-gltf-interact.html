@@ -4,6 +4,14 @@
     <!-- we import arjs version without NFT but with marker + location based support -->
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
     <style>
+        @font-face {
+            font-family: 'NorseBold';
+            src: url('/fonts/NorseBold-2Kge.ttf') format('ttf');
+            font-weight: bold;
+            font-style: bold;
+            font-display: swap;
+        }
+
         body {
             margin: 0;
             overflow: hidden;
@@ -257,14 +265,14 @@
                     position="0.189 1.75 0.645"
                     roatation=" 10 -2.62 7.12"
                     align="center"
-                    color="#FFD700"
+                    color="#000000"
                     font="roboto"
                     width="4"
                     scale="0.5 0.5 0.5"
                     geometry="primitive: plane; width: 5; height: 3"
-                    material="color: rgba(0,0,0,0.7); opacity: 1"
+                    material="color: #C0C0C0; opacity: 0.95; shader: flat"
                     visible="true"
-                    text="zOffset: 0.02"
+                    text="zOffset: 0.04"
                     >
                 </a-text>
 
@@ -280,15 +288,15 @@
                     value="While Harald Bluetooth commissioned the stone, recent research reveals that Queen Thyra—Harald's mother—may have been the true architect of Danish unity. Thyra's name appears on four runestones across Denmark, more than any other individual from the Viking Age, including her husband King Gorm and her son Harald. The smaller Jelling stone, erected by Gorm around 950, calls Thyra 'Denmark's adornment' or 'Denmark's salvation'. Using 3D scanning technology, researchers discovered that the same runemaster, Ravnunge-Tue, carved both major Jelling stones and the Læborg stone 30 kilometers away, which reads: "Ravnunge-Tue carved these runes in memory of Thyra, his queen'. This connection proves all references point to the same powerful woman. Medieval historians described Thyra as wise, resourceful, and credited her with building the Danevirke defensive wall. She likely came from a more prestigious family than Gorm, and he may have been king only through marriage to her."
                     position="1.85 1.75 -0.68"
                     align="center"
-                    color="#FFD700"
+                    color="#000000"
                     font="roboto"
                     width="4"
                     scale="0.5 0.5 0.5"
                     rotation="-21 111 4.5"
                     geometry="primitive: plane; width: 5; height: 2.75"
-                    material="color: rgba(0,0,0,0.7); opacity: 1"
+                    material="color: #C0C0C0; opacity: 0.95; shader: flat"
                     visible="true"
-                    text="zOffset: 0.02"
+                    text="zOffset: 0.04"
                     >
                 </a-text>
 
@@ -297,16 +305,16 @@
                     id="rightText"
                     value="The Jelling Stone appears to capture a pivotal moment of religious transformation. Evidence suggests King Gorm the Old was buried in an oak chamber in the North Mound around 958-959, following what seem to be traditional pagan customs. His son Harald likely converted to Christianity around 960 and researchers believe he had his father's remains moved into a newly constructed wooden church between the mounds, possibly giving Gorm a Christian reburial. Harald then erected the great runestone with both Christian imagery and elements pagans could understand, potentially easing the population's transition to the new faith. The stone may have served as propaganda, announcing that the old ways were ending and a new Christian era had begun."
                     align="center"
-                    color="#FFD700"
+                    color="#000000"
                     font="roboto"
                     width="4"
                     scale="0.5 0.5 0.5"
                     rotation="-10 -170 15"
                     position="-0.27 1.75 -1"
                     geometry="primitive: plane; width: 5; height: 3.2"
-                    material="color: rgba(0,0,0,0.7); opacity: 1"
+                    material="color: #C0C0C0; opacity: 0.95; shader: flat"
                     visible="true"
-                    text="zOffset: 0.02"
+                    text="zOffset: 0.04"
                     >
                 </a-text>
             </a-marker>
