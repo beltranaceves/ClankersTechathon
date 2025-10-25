@@ -1,0 +1,98 @@
+---
+---
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>AR Marker Scene • A-Frame</title>
+    <meta name="description" content="AR Marker Scene • A-Frame">
+    <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+    <script>
+      AFRAME.registerComponent('follow-shadow', {
+        schema: {type: 'selector'},
+        init() {this.el.object3D.renderOrder = -1;},
+        tick() {
+          if (this.data) {
+            this.el.object3D.position.copy(this.data.object3D.position);
+            this.el.object3D.position.y-=0.001; // stop z-fighting
+          }
+        }
+      });
+    </script>
+  </head>
+  <body style="margin: 0; overflow: hidden;">
+    <a-scene
+      embedded
+      arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
+      renderer="colorManagement: true; exposure: 1; toneMapping: ACESFilmic"
+      shadow="type: pcfsoft"
+      vr-mode-ui="enabled: false"
+    >
+      <!-- Asset management -->
+      <a-assets>
+        <!-- You can add custom markers here if needed -->
+      </a-assets>
+
+      <!-- AR Marker -->
+      <a-marker 
+        preset="hiro" 
+        raycaster="objects: .clickable"
+        emitevents="true"
+        cursor="fuse: false; rayOrigin: mouse;"
+        id="markerA"
+      >
+        <!-- Light setup -->
+        <a-light 
+          type="directional" 
+          light="castShadow:true;" 
+          position="1 1 1" 
+          intensity="1.57" 
+          shadow-camera-automatic="#objects"
+        ></a-light>
+
+        <!-- The same 3D objects from the original scene -->
+        <a-entity id="objects" scale="0.2 0.2 0.2" position="0 0 0" shadow>
+          <a-box 
+            position="-1 0.5 1" 
+            rotation="0 45 0" 
+            color="#4CC3D9"
+            class="clickable"
+          ></a-box>
+          <a-sphere 
+            position="0 1.25 -1" 
+            radius="1.25" 
+            color="#EF2D5E"
+            class="clickable"
+          ></a-sphere>
+          <a-cylinder 
+            position="1 0.75 1" 
+            radius="0.5" 
+            height="1.5" 
+            color="#FFC65D"
+            class="clickable"
+          ></a-cylinder>
+        </a-entity>
+
+        <!-- Shadow plane -->
+        <a-plane 
+          follow-shadow="#objects" 
+          material="shader:shadow" 
+          shadow="cast:false;" 
+          rotation="-90 0 0" 
+          width="2" 
+          height="2"
+        ></a-plane>
+      </a-marker>
+
+      <!-- AR Camera -->
+      <a-entity camera></a-entity>
+    </a-scene>
+
+    <!-- Instructions for user -->
+    <div style="position: fixed; top: 10px; left: 10px; width: 100%; color: white; font-family: Arial; z-index: 1; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 5px; max-width: 300px;">
+      <p>Point your camera at a Hiro marker to see the 3D scene!</p>
+      <p>Download Hiro marker: <a href="https://raw.githubusercontent.com/AR-js-org/AR.js/master/data/images/hiro.png" style="color: #4CC3D9;">Hiro Marker</a></p>
+    </div>
+  </body>
+</html>
