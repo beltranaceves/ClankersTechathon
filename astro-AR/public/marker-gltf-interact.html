@@ -4,14 +4,6 @@
     <!-- we import arjs version without NFT but with marker + location based support -->
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
     <style>
-        @font-face {
-            font-family: 'NorseBold';
-            src: url('/fonts/NorseBold-2Kge.ttf') format('ttf');
-            font-weight: bold;
-            font-style: bold;
-            font-display: swap;
-        }
-
         body {
             margin: 0;
             overflow: hidden;
@@ -237,12 +229,6 @@
         </div>
         
         <a-scene embedded arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3 ">
-            <a-assets>
-            <img id="cornerTL" src="frame-tl.png">
-            <img id="cornerTR" src="frame-tr.png">
-            <img id="cornerBL" src="frame-bl.png">
-            <img id="cornerBR" src="frame-br.png">
-            </a-assets>
             <a-marker 
                 preset="kanji"
                 smooth="true"
@@ -258,7 +244,6 @@
                     gltf-model="/Painted_Rock_rc10.glb"
                 ></a-entity>
                 
-                <a-entity id="frontTextGroup" position="0.189 1.75 0.645" rotation="10 -2.62 7.12" scale="0.5 0.5 0.5">
                 <a-text 
                     id="frontText"
                     value="A millennium after Harald Bluetooth united Denmark and Norway, three industry leaders nokia, Intel and Ericsson met. During the meeting, Jim Kardach, having recently read about Viking history, had learned how Harald had unified Scandinavia and marked his achievement with the Jelling runestones. He proposed 'Bluetooth' as a placeholder name for the new wireless standard, intending to unite devices just as Harald united kingdoms. The iconic Bluetooth logo combines Harald's initials in ancient Norse bindrunes: ᚼ (H for Harald) and ᛒ (B for Bluetooth). The founding members of the Bluetooth Special Interest Group made pilgrimages to Jelling in 1998 and returned for the 25th anniversary in 2023, paying homage to their technology's namesake."
@@ -270,17 +255,11 @@
                     width="4"
                     scale="0.5 0.5 0.5"
                     geometry="primitive: plane; width: 5; height: 3"
-                    material="color: #C0C0C0; opacity: 0.95; shader: flat"
+                    material="color: rgba(255,255,255,0.9); opacity: 1"
                     visible="true"
-                    text="zOffset: 0.04"
+                    text="zOffset: 0.02"
                     >
                 </a-text>
-
-                <a-image src="#cornerTL" width="0.3" height="0.3" position="-2.4 0.35 0.02"></a-image>
-                <a-image src="#cornerTR" width="0.3" height="0.3" position="2.4 0.35 0.02"></a-image>
-                <a-image src="#cornerBL" width="0.3" height="0.3" position="-2.4 -0.35 0.02"></a-image>
-                <a-image src="#cornerBR" width="0.3" height="0.3" position="2.4 -0.35 0.02"></a-image>
-                </a-entity>
 
                 <!-- Translation text for Left side -->
                 <a-text 
@@ -294,9 +273,9 @@
                     scale="0.5 0.5 0.5"
                     rotation="-21 111 4.5"
                     geometry="primitive: plane; width: 5; height: 2.75"
-                    material="color: #C0C0C0; opacity: 0.95; shader: flat"
+                    material="color: rgba(255,255,255,0.9); opacity: 1"
                     visible="true"
-                    text="zOffset: 0.04"
+                    text="zOffset: 0.02"
                     >
                 </a-text>
 
@@ -312,9 +291,9 @@
                     rotation="-10 -170 15"
                     position="-0.27 1.75 -1"
                     geometry="primitive: plane; width: 5; height: 3.2"
-                    material="color: #C0C0C0; opacity: 0.95; shader: flat"
+                    material="color: rgba(255,255,255,0.9); opacity: 1"
                     visible="true"
-                    text="zOffset: 0.04"
+                    text="zOffset: 0.02"
                     >
                 </a-text>
             </a-marker>
