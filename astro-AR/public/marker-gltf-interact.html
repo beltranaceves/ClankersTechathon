@@ -126,9 +126,36 @@
             background: #FFD700;
             color: black;
         }
+        
+        .stories-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 100, 200, 0.9);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1001;
+            transition: all 0.3s ease;
+        }
+        
+        .stories-btn:hover {
+            background: rgba(0, 120, 220, 0.9);
+            transform: scale(1.05);
+        }
+        
+        .stories-btn.hidden {
+            background: rgba(150, 150, 150, 0.9);
+        }
     </style>
     <body>
         <button class="toggle-btn" id="toggleBtn">⚙️</button>
+        
+        <button class="stories-btn" id="storiesBtn">📖 Show Stories</button>
         
         <div class="controls" id="controls">
             <div class="control-group">
@@ -305,6 +332,10 @@
             const rightBtn = document.querySelector('#rightBtn');
             const hideAllBtn = document.querySelector('#hideAllBtn');
             
+            // Stories button
+            const storiesBtn = document.querySelector('#storiesBtn');
+            let storiesVisible = true;
+            
             // Default values
             const defaults = {
                 scale: 150,
@@ -314,6 +345,12 @@
                 rotX: 0,
                 rotY: 0,
                 rotZ: 0
+            };
+            
+            // Text size states
+            const textSizes = {
+                normal: "0.5 0.5 0.5",
+                small: "0.2 0.2 0.2"
             };
             
             // Debounce function for performance
@@ -400,6 +437,27 @@
             
             hideAllBtn.addEventListener('click', () => {
                 hideAllTranslations();
+            });
+            
+            // Stories button functionality
+            storiesBtn.addEventListener('click', () => {
+                storiesVisible = !storiesVisible;
+                
+                const newScale = storiesVisible ? textSizes.normal : textSizes.small;
+                
+                // Update all text elements scale
+                frontText.setAttribute('scale', newScale);
+                leftText.setAttribute('scale', newScale);
+                rightText.setAttribute('scale', newScale);
+                
+                // Update button text and style
+                if (storiesVisible) {
+                    storiesBtn.textContent = '📖 Show Stories';
+                    storiesBtn.classList.remove('hidden');
+                } else {
+                    storiesBtn.textContent = '📖 Hide Stories';
+                    storiesBtn.classList.add('hidden');
+                }
             });
             
             // Update model helper to also update text positions
