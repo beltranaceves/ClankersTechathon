@@ -169,8 +169,13 @@
             <button class="reset-btn" id="resetBtn">Reset to Default</button>
         </div>
         
-        <a-scene embedded arjs>
-            <a-marker preset="hiro">
+        <a-scene embedded arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3 ">
+            <a-marker preset="hiro"
+                smooth="true"
+                smoothCount="10"
+                smoothTolerance="0.01"
+                smoothThreshold="5"
+                raycaster="objects: .clickable">
                 <a-entity
                     id="model"
                     position="0 0 0"
