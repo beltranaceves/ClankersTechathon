@@ -105,6 +105,27 @@
             margin-top: 10px;
             width: 100%;
         }
+        
+        .translation-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 3px;
+            font-size: 11px;
+            cursor: pointer;
+            flex: 1;
+            min-width: 60px;
+        }
+        
+        .translation-btn:hover {
+            background: #45a049;
+        }
+        
+        .translation-btn.active {
+            background: #FFD700;
+            color: black;
+        }
     </style>
     <body>
         <button class="toggle-btn" id="toggleBtn">⚙️</button>
@@ -167,6 +188,17 @@
             </div>
             
             <button class="reset-btn" id="resetBtn">Reset to Default</button>
+            
+            <!-- Add translation controls -->
+            <div class="control-group">
+                <label class="control-label">Translations</label>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="translation-btn" id="frontBtn" data-text="frontText">Front</button>
+                    <button class="translation-btn" id="leftBtn" data-text="leftText">Left</button>
+                    <button class="translation-btn" id="rightBtn" data-text="rightText">Right</button>
+                    <button class="translation-btn" id="hideAllBtn">Hide All</button>
+                </div>
+            </div>
         </div>
         
         <a-scene embedded arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3 ">
@@ -184,6 +216,47 @@
                     rotation="0 0 0"
                     gltf-model="/Painted_Rock_rc1.glb"
                 ></a-entity>
+                
+                <!-- Translation text for Front side -->
+                <a-text 
+                    id="frontText"
+                    value="Front: Here lies Thorvald, brave warrior"
+                    position="0 2 1.5"
+                    align="center"
+                    color="#FFD700"
+                    font="roboto"
+                    geometry="primitive: plane; width: 3; height: 0.8"
+                    material="color: rgba(0,0,0,0.7); opacity: 0.8"
+                    visible="true">
+                </a-text>
+                
+                <!-- Translation text for Left side -->
+                <a-text 
+                    id="leftText"
+                    value="Left: Son of Erik the Red"
+                    position="-1.5 2 0"
+                    align="center"
+                    color="#FFD700"
+                    font="roboto"
+                    rotation="0 90 0"
+                    geometry="primitive: plane; width: 3; height: 0.8"
+                    material="color: rgba(0,0,0,0.7); opacity: 0.8"
+                    visible="true">
+                </a-text>
+                
+                <!-- Translation text for Right side -->
+                <a-text 
+                    id="rightText"
+                    value="Right: Died in battle at Stamford Bridge"
+                    position="1.5 2 0"
+                    align="center"
+                    color="#FFD700"
+                    font="roboto"
+                    rotation="0 -90 0"
+                    geometry="primitive: plane; width: 3; height: 0.8"
+                    material="color: rgba(0,0,0,0.7); opacity: 0.8"
+                    visible="true">
+                </a-text>
             </a-marker>
             <a-entity camera></a-entity>
         </a-scene>
@@ -215,6 +288,16 @@
             
             const rotZSlider = document.querySelector('#rotZSlider');
             const rotZValue = document.querySelector('#rotZValue');
+            
+            // Translation elements
+            const frontText = document.querySelector('#frontText');
+            const leftText = document.querySelector('#leftText');
+            const rightText = document.querySelector('#rightText');
+            
+            const frontBtn = document.querySelector('#frontBtn');
+            const leftBtn = document.querySelector('#leftBtn');
+            const rightBtn = document.querySelector('#rightBtn');
+            const hideAllBtn = document.querySelector('#hideAllBtn');
             
             // Default values
             const defaults = {
@@ -272,7 +355,48 @@
                 updateModel();
             });
             
-            // Update model helper
+            // Translation control functions
+            function hideAllTranslations() {
+                frontText.setAttribute('visible', false);
+                leftText.setAttribute('visible', false);
+                rightText.setAttribute('visible', false);
+                
+                // Remove active class from all buttons
+                document.querySelectorAll('.translation-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+            }
+            
+            function toggleTranslation(textElement, button) {
+                const isVisible = textElement.getAttribute('visible');
+                
+                if (isVisible === 'true' || isVisible === true) {
+                    textElement.setAttribute('visible', false);
+                    button.classList.remove('active');
+                } else {
+                    textElement.setAttribute('visible', true);
+                    button.classList.add('active');
+                }
+            }
+            
+            // Translation button event listeners
+            frontBtn.addEventListener('click', () => {
+                toggleTranslation(frontText, frontBtn);
+            });
+            
+            leftBtn.addEventListener('click', () => {
+                toggleTranslation(leftText, leftBtn);
+            });
+            
+            rightBtn.addEventListener('click', () => {
+                toggleTranslation(rightText, rightBtn);
+            });
+            
+            hideAllBtn.addEventListener('click', () => {
+                hideAllTranslations();
+            });
+            
+            // Update model helper to also update text positions
             const updateModel = debounce(() => {
                 const scale = scaleSlider.value;
                 const x = parseFloat(posXSlider.value);
@@ -285,6 +409,14 @@
                 model.setAttribute('scale', `${scale} ${scale} ${scale}`);
                 model.setAttribute('position', `${x} ${y} ${z}`);
                 model.setAttribute('rotation', `${rotX} ${rotY} ${rotZ}`);
+                
+                // Update text positions relative to model
+                const textY = y + (2 * scale / 100);
+                const textOffset = 1.5 * scale / 100;
+                
+                frontText.setAttribute('position', `${x} ${textY} ${z + textOffset}`);
+                leftText.setAttribute('position', `${x - textOffset} ${textY} ${z}`);
+                rightText.setAttribute('position', `${x + textOffset} ${textY} ${z}`);
             }, 50);
             
             // Scale control
@@ -310,6 +442,22 @@
                     const value = e.target.value;
                     document.querySelector(`#rot${axes[index]}Value`).textContent = value + '°';
                     updateModel();
+                });
+            });
+            
+            // Translation buttons
+            document.querySelectorAll('.translation-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const action = e.target.id.replace('Btn', '');
+                    const textId = e.target.getAttribute('data-text');
+                    
+                    if (action === 'hideAll') {
+                        hideAllTranslations();
+                    } else {
+                        const textEl = document.querySelector(`#${textId}`);
+                        const button = e.target;
+                        toggleTranslation(textEl, button);
+                    }
                 });
             });
         </script>
