@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+    <!-- we import arjs version without NFT but with marker + location based support -->
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+        }
+        
+        .controls {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            z-index: 1000;
+            max-height: 50vh;
+            overflow-y: auto;
+            display: none; /* Start hidden */
+        }
+        
+        .control-group {
+            margin-bottom: 12px;
+        }
+        
+        .control-label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+        
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .slider {
+            flex: 1;
+            height: 30px;
+            -webkit-appearance: none;
+            background: #333;
+            border-radius: 5px;
+            outline: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 25px;
+            height: 25px;
+            background: #4CAF50;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        .slider::-moz-range-thumb {
+            width: 25px;
+            height: 25px;
+            background: #4CAF50;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .value-display {
+            min-width: 50px;
+            text-align: center;
+            background: #333;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-size: 11px;
+        }
+        
+        .toggle-btn {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            padding: 12px;
+            border-radius: 50%;
+            font-size: 16px;
+            cursor: pointer;
+            z-index: 1001;
+            width: 45px;
+            height: 45px;
+        }
+        
+        .reset-btn {
+            background: #FF6B6B;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-size: 12px;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 100%;
+        }
+    </style>
+    <body>
+        <button class="toggle-btn" id="toggleBtn">⚙️</button>
+        
+        <div class="controls" id="controls">
+            <div class="control-group">
+                <label class="control-label">Scale</label>
+                <div class="slider-container">
+                    <input type="range" class="slider" id="scaleSlider" min="50" max="300" value="150">
+                    <span class="value-display" id="scaleValue">150</span>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label class="control-label">Position X</label>
+                <div class="slider-container">
+                    <input type="range" class="slider" id="posXSlider" min="-2" max="2" step="0.1" value="0">
+                    <span class="value-display" id="posXValue">0.0</span>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label class="control-label">Position Y</label>
+                <div class="slider-container">
+                    <input type="range" class="slider" id="posYSlider" min="-2" max="2" step="0.1" value="0">
+                    <span class="value-display" id="posYValue">0.0</span>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label class="control-label">Position Z</label>
+                <div class="slider-container">
+                    <input type="range" class="slider" id="posZSlider" min="-2" max="2" step="0.1" value="0">
+                    <span class="value-display" id="posZValue">0.0</span>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label class="control-label">Rotation X</label>
+                <div class="slider-container">
+                    <input type="range" class="slider" id="rotXSlider" min="0" max="360" value="0">
+                    <span class="value-display" id="rotXValue">0°</span>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label class="control-label">Rotation Y</label>
+                <div class="slider-container">
+                    <input type="range" class="slider" id="rotYSlider" min="0" max="360" value="0">
+                    <span class="value-display" id="rotYValue">0°</span>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label class="control-label">Rotation Z</label>
+                <div class="slider-container">
+                    <input type="range" class="slider" id="rotZSlider" min="0" max="360" value="0">
+                    <span class="value-display" id="rotZValue">0°</span>
+                </div>
+            </div>
+            
+            <button class="reset-btn" id="resetBtn">Reset to Default</button>
+        </div>
+        
+        <a-scene embedded arjs>
+            <a-marker preset="hiro">
+                <a-entity
+                    id="model"
+                    position="0 0 0"
+                    scale="150 150 150"
+                    rotation="0 0 0"
+                    gltf-model="/Painted_Rock.glb"
+                ></a-entity>
+            </a-marker>
+            <a-entity camera></a-entity>
+        </a-scene>
+        
+        <script>
+            // Get references to DOM elements
+            const model = document.querySelector('#model');
+            const toggleBtn = document.querySelector('#toggleBtn');
+            const controls = document.querySelector('#controls');
+            const resetBtn = document.querySelector('#resetBtn');
+            
+            const scaleSlider = document.querySelector('#scaleSlider');
+            const scaleValue = document.querySelector('#scaleValue');
+            
+            const posXSlider = document.querySelector('#posXSlider');
+            const posXValue = document.querySelector('#posXValue');
+            
+            const posYSlider = document.querySelector('#posYSlider');
+            const posYValue = document.querySelector('#posYValue');
+            
+            const posZSlider = document.querySelector('#posZSlider');
+            const posZValue = document.querySelector('#posZValue');
+            
+            const rotXSlider = document.querySelector('#rotXSlider');
+            const rotXValue = document.querySelector('#rotXValue');
+            
+            const rotYSlider = document.querySelector('#rotYSlider');
+            const rotYValue = document.querySelector('#rotYValue');
+            
+            const rotZSlider = document.querySelector('#rotZSlider');
+            const rotZValue = document.querySelector('#rotZValue');
+            
+            // Default values
+            const defaults = {
+                scale: 150,
+                posX: 0,
+                posY: 0,
+                posZ: 0,
+                rotX: 0,
+                rotY: 0,
+                rotZ: 0
+            };
+            
+            // Debounce function for performance
+            function debounce(func, wait) {
+                let timeout;
+                return function executedFunction(...args) {
+                    const later = () => {
+                        clearTimeout(timeout);
+                        func(...args);
+                    };
+                    clearTimeout(timeout);
+                    timeout = setTimeout(later, wait);
+                };
+            }
+            
+            // Toggle controls visibility
+            toggleBtn.addEventListener('click', () => {
+                controls.style.display = controls.style.display === 'none' ? 'block' : 'none';
+            });
+            
+            // Reset to defaults
+            resetBtn.addEventListener('click', () => {
+                Object.keys(defaults).forEach(key => {
+                    const slider = document.querySelector(`#${key.replace(/[A-Z]/g, letter => letter.toLowerCase())}Slider`);
+                    const value = document.querySelector(`#${key.replace(/[A-Z]/g, letter => letter.toLowerCase())}Value`);
+                    if (slider) {
+                        slider.value = defaults[key];
+                        if (key === 'scale') {
+                            value.textContent = defaults[key];
+                        } else if (key.startsWith('pos')) {
+                            value.textContent = defaults[key].toFixed(1);
+                        } else {
+                            value.textContent = defaults[key] + '°';
+                        }
+                    }
+                });
+                updateModel();
+            });
+            
+            // Update model helper
+            const updateModel = debounce(() => {
+                const scale = scaleSlider.value;
+                const x = parseFloat(posXSlider.value);
+                const y = parseFloat(posYSlider.value);
+                const z = parseFloat(posZSlider.value);
+                const rotX = rotXSlider.value;
+                const rotY = rotYSlider.value;
+                const rotZ = rotZSlider.value;
+                
+                model.setAttribute('scale', `${scale} ${scale} ${scale}`);
+                model.setAttribute('position', `${x} ${y} ${z}`);
+                model.setAttribute('rotation', `${rotX} ${rotY} ${rotZ}`);
+            }, 50);
+            
+            // Scale control
+            scaleSlider.addEventListener('input', (e) => {
+                scaleValue.textContent = e.target.value;
+                updateModel();
+            });
+            
+            // Position controls
+            [posXSlider, posYSlider, posZSlider].forEach((slider, index) => {
+                const axes = ['X', 'Y', 'Z'];
+                slider.addEventListener('input', (e) => {
+                    const value = parseFloat(e.target.value);
+                    document.querySelector(`#pos${axes[index]}Value`).textContent = value.toFixed(1);
+                    updateModel();
+                });
+            });
+            
+            // Rotation controls
+            [rotXSlider, rotYSlider, rotZSlider].forEach((slider, index) => {
+                const axes = ['X', 'Y', 'Z'];
+                slider.addEventListener('input', (e) => {
+                    const value = e.target.value;
+                    document.querySelector(`#rot${axes[index]}Value`).textContent = value + '°';
+                    updateModel();
+                });
+            });
+        </script>
+    </body>
+</html>
