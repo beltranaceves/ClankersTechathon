@@ -79,6 +79,7 @@
         }
         
         .toggle-btn {
+            visibility: hidden;
             position: fixed;
             top: 10px;
             right: 10px;
@@ -321,11 +322,10 @@
                     font="roboto"
                     width="4"
                     scale="0.5 0.5 0.5"
-                    geometry="primitive: plane; width: 5; height: 3"
+                    geometry="primitive: plane; width: 5; height: 3.2"
                     material="color: rgba(255,255,255,0.9); opacity: 1"
                     visible="true"
                     text="zOffset: 0.02"
-                    frame-corners="srcTL: #TL; srcTR: #TR; srcBL: #BL; srcBR: #BR; inset: 0.2; size: 2; z: 0.03"
                     >
                 </a-text>
 
@@ -409,7 +409,7 @@
             // Stories button
             const storiesBtn = document.querySelector('#storiesBtn');
             let storiesVisible = true;
-            var audio = new Audio('Star_Wars.mp3');
+            var audio = new Audio('Nordic_music.mp3');
             
             // Default values
             const defaults = {
