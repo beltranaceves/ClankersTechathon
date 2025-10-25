@@ -4,41 +4,177 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Hello, AR World! • A-Frame</title>
-    <meta name="description" content="Hello, AR World! • A-Frame">
-    <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.js"></script>
-    <script>
-      AFRAME.registerComponent('follow-shadow', {
-        schema: {type: 'selector'},
-        init() {this.el.object3D.renderOrder = -1;},
-        tick() {
-          if (this.data) {
-            this.el.object3D.position.copy(this.data.object3D.position);
-            this.el.object3D.position.y-=0.001;
-          }
-        }
-      });
-    </script>
+    <title>Three.js AR Marker</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+        font-family: Arial, sans-serif;
+      }
+      #info {
+        position: absolute;
+        top: 10px;
+        width: 100%;
+        text-align: center;
+        z-index: 100;
+        color: white;
+        background: rgba(0,0,0,0.5);
+        padding: 10px;
+      }
+      canvas {
+        display: block;
+      }
+    </style>
   </head>
-  <body style="margin: 0px; overflow: hidden;">
-    <a-scene
-      vr-mode-ui="enabled: false;"
-      renderer="logarithmicDepthBuffer: true;"
-      embedded
-      arjs="sourceType: webcam; debugUIEnabled: true; trackingMethod: best; patternRatio: 0.8;"
-    >
-      <!-- Hiro marker -->
-      <a-marker preset="hiro">
-        <a-entity id="objects" scale="1 1 1" position="0 0.5 0">
-          <a-box position="-1 0 0" rotation="0 45 0" color="#4CC3D9" scale="0.5 0.5 0.5"></a-box>
-          <a-sphere position="0 0 0" radius="0.5" color="#EF2D5E"></a-sphere>
-          <a-cylinder position="1 0 0" radius="0.3" height="1" color="#FFC65D"></a-cylinder>
-        </a-entity>
-      </a-marker>
-      
-      <!-- Camera entity -->
-      <a-entity camera></a-entity>
-    </a-scene>
+  <body>
+    <div id="info">Point camera at Hiro marker</div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/three@0.157.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@ar-js-org/ar.js@3.4.5/three.js/build/ar-threejs.min.js"></script>
+    
+    <script>
+      let scene, camera, renderer, arToolkitSource, arToolkitContext;
+      let markerRoot, cube, sphere, cylinder;
+
+      init();
+      animate();
+
+      function init() {
+        // Create scene
+        scene = new THREE.Scene();
+
+        // Create camera
+        camera = new THREE.Camera();
+        scene.add(camera);
+
+        // Create renderer
+        renderer = new THREE.WebGLRenderer({ 
+          antialias: true, 
+          alpha: true 
+        });
+        renderer.setClearColor(new THREE.Color('lightgrey'), 0);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.domElement.style.position = 'absolute';
+        renderer.domElement.style.top = '0px';
+        renderer.domElement.style.left = '0px';
+        document.body.appendChild(renderer.domElement);
+
+        // Setup AR
+        setupAR();
+        
+        // Create 3D objects
+        create3DObjects();
+
+        // Handle window resize
+        window.addEventListener('resize', onWindowResize, false);
+      }
+
+      function setupAR() {
+        // Initialize AR source (webcam)
+        arToolkitSource = new THREEx.ArToolkitSource({
+          sourceType: 'webcam',
+        });
+
+        arToolkitSource.init(() => {
+          setTimeout(() => {
+            onResize();
+          }, 2000);
+        });
+
+        // Initialize AR context
+        arToolkitContext = new THREEx.ArToolkitContext({
+          cameraParametersUrl: 'https://cdn.jsdelivr.net/npm/@ar-js-org/ar.js@3.4.5/data/data/camera_para.dat',
+          detectionMode: 'mono',
+        });
+
+        arToolkitContext.init(() => {
+          camera.projectionMatrix.copy(arToolkitContext.getProjectionMatrix());
+        });
+
+        // Create marker root
+        markerRoot = new THREE.Group();
+        scene.add(markerRoot);
+
+        // Setup Hiro marker
+        let markerControls = new THREEx.ArMarkerControls(arToolkitContext, markerRoot, {
+          type: 'pattern',
+          patternUrl: 'https://cdn.jsdelivr.net/npm/@ar-js-org/ar.js@3.4.5/data/data/patt.hiro',
+        });
+      }
+
+      function create3DObjects() {
+        // Create materials
+        const boxMaterial = new THREE.MeshBasicMaterial({ color: 0x4CC3D9 });
+        const sphereMaterial = new THREE.MeshBasicMaterial({ color: 0xEF2D5E });
+        const cylinderMaterial = new THREE.MeshBasicMaterial({ color: 0xFFC65D });
+
+        // Create geometries
+        const boxGeometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
+        const sphereGeometry = new THREE.SphereGeometry(0.25, 16, 16);
+        const cylinderGeometry = new THREE.CylinderGeometry(0.15, 0.15, 0.5, 16);
+
+        // Create meshes
+        cube = new THREE.Mesh(boxGeometry, boxMaterial);
+        cube.position.set(-0.5, 0.25, 0);
+        cube.rotation.y = Math.PI / 4;
+
+        sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+        sphere.position.set(0, 0.5, 0);
+
+        cylinder = new THREE.Mesh(cylinderGeometry, cylinderMaterial);
+        cylinder.position.set(0.5, 0.25, 0);
+
+        // Add to marker root
+        markerRoot.add(cube);
+        markerRoot.add(sphere);
+        markerRoot.add(cylinder);
+
+        // Add some lighting
+        const light = new THREE.DirectionalLight(0xffffff, 1);
+        light.position.set(1, 1, 1);
+        scene.add(light);
+
+        const ambientLight = new THREE.AmbientLight(0x404040, 0.4);
+        scene.add(ambientLight);
+      }
+
+      function animate() {
+        requestAnimationFrame(animate);
+
+        if (arToolkitSource && arToolkitSource.ready) {
+          arToolkitContext.update(arToolkitSource.domElement);
+        }
+
+        // Rotate objects for visual effect
+        if (cube) {
+          cube.rotation.x += 0.01;
+          cube.rotation.y += 0.01;
+        }
+        if (sphere) {
+          sphere.rotation.y += 0.02;
+        }
+        if (cylinder) {
+          cylinder.rotation.z += 0.01;
+        }
+
+        renderer.render(scene, camera);
+      }
+
+      function onResize() {
+        arToolkitSource.onResizeElement();
+        arToolkitSource.copyElementSizeTo(renderer.domElement);
+        if (arToolkitContext.arController !== null) {
+          arToolkitSource.copyElementSizeTo(arToolkitContext.arController.canvas);
+        }
+      }
+
+      function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        onResize();
+      }
+    </script>
   </body>
 </html>
