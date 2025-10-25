@@ -228,7 +228,74 @@
             </div>
         </div>
         
+        <!--Test-->
+        <script>
+            AFRAME.registerComponent('frame-corners', {
+                schema: {
+                    inset: { type: 'number', default: 0.15 },
+                    size: { type: 'number', default: 0.35 },
+                    z: { type: 'number', default: 0.03 },
+                    srcTL: { type: 'selector' },
+                    srcTR: { type: 'selector' },
+                    srcBL: { type: 'selector' },
+                    srcBR: { type: 'selector' }
+                },
+                init: function () {
+                    this.imgTL = document.createElement('a-image');
+                    this.imgTR = document.createElement('a-image');
+                    this.imgBL = document.createElement('a-image');
+                    this.imgBR = document.createElement('a-image');
+
+                    const imgs = [this.imgTL, this.imgTR, this.imgBL, this.imgBR];
+                    imgs.forEach(img => {
+                        img.setAttribute('width', this.data.size);
+                        img.setAttribute('height', this.data.size);
+                        // flat = unlit (good for UI), transparent for PNGs
+                        img.setAttribute('material', 'shader: flat; transparent: true; alphaTest: 0.01; color: #FFFFFF');
+                        this.el.appendChild(img);
+                    });
+
+                    // IMPORTANT: set src with a selector string, not the element object
+                    if (this.data.srcTL) this.imgTL.setAttribute('src', `#${this.data.srcTL.id}`);
+                    if (this.data.srcTR) this.imgTR.setAttribute('src', `#${this.data.srcTR.id}`);
+                    if (this.data.srcBL) this.imgBL.setAttribute('src', `#${this.data.srcBL.id}`);
+                    if (this.data.srcBR) this.imgBR.setAttribute('src', `#${this.data.srcBR.id}`);
+
+                    this.updatePositions = this.updatePositions.bind(this);
+                    this.el.addEventListener('loaded', this.updatePositions);
+                    this.el.addEventListener('componentchanged', (e) => {
+                        if (e.detail.name === 'geometry' || e.detail.name === 'text') this.updatePositions();
+                    });
+                },
+                updatePositions: function () {
+                    const geo = this.el.getAttribute('geometry') || {};
+                    const width = Number(geo.width) || 5;
+                    const height = Number(geo.height) || 3;
+
+                    const inset = this.data.inset;
+                    const z = this.data.z;
+
+                    const leftX = -width / 2 + inset;
+                    const rightX = width / 2 - inset;
+                    const topY = height / 2 - inset;
+                    const bottomY = -height / 2 + inset;
+
+                    this.imgTL.setAttribute('position', `${leftX} ${topY} ${z}`);
+                    this.imgTR.setAttribute('position', `${rightX} ${topY} ${z}`);
+                    this.imgBL.setAttribute('position', `${leftX} ${bottomY} ${z}`);
+                    this.imgBR.setAttribute('position', `${rightX} ${bottomY} ${z}`);
+                }
+            });
+        </script>
+
+
         <a-scene embedded arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3 ">
+            <a-assets>
+                <img id="TL" src="frame-tl.png">
+                <img id="TR" src="frame-tr.png">
+                <img id="BL" src="frame-bl.png">
+                <img id="BR" src="frame-br.png">
+            </a-assets>
             <a-marker 
                 preset="kanji"
                 smooth="true"
@@ -258,6 +325,7 @@
                     material="color: rgba(255,255,255,0.9); opacity: 1"
                     visible="true"
                     text="zOffset: 0.02"
+                    frame-corners="srcTL: #TL; srcTR: #TR; srcBL: #BL; srcBR: #BR; inset: 0.2; size: 2; z: 0.03"
                     >
                 </a-text>
 
