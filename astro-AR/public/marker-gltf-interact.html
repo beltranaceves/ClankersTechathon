@@ -229,6 +229,12 @@
         </div>
         
         <a-scene embedded arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3 ">
+            <a-assets>
+            <img id="cornerTL" src="frame-tl.png">
+            <img id="cornerTR" src="frame-tr.png">
+            <img id="cornerBL" src="frame-bl.png">
+            <img id="cornerBR" src="frame-br.png">
+            </a-assets>
             <a-marker 
                 preset="kanji"
                 smooth="true"
@@ -244,6 +250,7 @@
                     gltf-model="/Painted_Rock_rc7.glb"
                 ></a-entity>
                 
+                <a-entity id="frontTextGroup" position="0.189 1.75 0.645" rotation="10 -2.62 7.12" scale="0.5 0.5 0.5">
                 <a-text 
                     id="frontText"
                     value="top_text"
@@ -258,6 +265,12 @@
                     material="color: rgba(0,0,0,0.7); opacity: 0.99"
                     visible="true">
                 </a-text>
+
+                <a-image src="#cornerTL" width="0.3" height="0.3" position="-2.4 0.35 0.02"></a-image>
+                <a-image src="#cornerTR" width="0.3" height="0.3" position="2.4 0.35 0.02"></a-image>
+                <a-image src="#cornerBL" width="0.3" height="0.3" position="-2.4 -0.35 0.02"></a-image>
+                <a-image src="#cornerBR" width="0.3" height="0.3" position="2.4 -0.35 0.02"></a-image>
+                </a-entity>
 
                 <!-- Translation text for Left side -->
                 <a-text 
@@ -278,7 +291,7 @@
                 <!-- Translation text for Right side -->
                 <a-text 
                     id="rightText"
-                    value="toppest_text"
+                    value="toppest_text" 
                     align="center"
                     color="#FFD700"
                     font="roboto"
