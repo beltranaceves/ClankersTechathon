@@ -1,0 +1,53 @@
+---
+---
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Camera Transform AR • A-Frame</title>
+    <meta name="description" content="Camera Transform AR • A-Frame">
+    <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+    <script>
+      AFRAME.registerComponent('follow-shadow', {
+        schema: {type: 'selector'},
+        init() {this.el.object3D.renderOrder = -1;},
+        tick() {
+          if (this.data) {
+            this.el.object3D.position.copy(this.data.object3D.position);
+            this.el.object3D.position.y-=0.001;
+          }
+        }
+      });
+    </script>
+  </head>
+  <body>
+    <a-scene 
+      artoolkit
+      renderer="colorManagement: true; exposure: 1; toneMapping: ACESFilmic"
+      shadow="type: pcfsoft"
+    >
+      <a-light type="directional" light="castShadow:true;" position="1 1 1" intensity="1.57"></a-light>
+      
+      <!-- Static objects in world space -->
+      <a-entity id="objects" scale="0.2 0.2 0.2" position="0 0 -1" shadow>
+        <a-entity
+          position="0 0 0"
+          scale="0.15 0.15 0.15"
+          gltf-model="/sample_3.compressed.glb"
+        >
+        </a-entity>  
+      </a-entity>
+      <a-plane follow-shadow="#objects" material="shader:shadow" shadow="cast:false;" rotation="-90 0 0" width="2" height="2"></a-plane>
+      
+      <!-- Camera moves based on marker -->
+      <a-marker-camera 
+        preset="hiro"
+        smooth="true"
+        smoothCount="10"
+        smoothTolerance="0.01"
+        smoothThreshold="5"
+      ></a-marker-camera>
+    </a-scene>
+  </body>
+</html>
