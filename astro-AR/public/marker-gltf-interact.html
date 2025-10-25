@@ -155,7 +155,7 @@
     <body>
         <button class="toggle-btn" id="toggleBtn">⚙️</button>
         
-        <button class="stories-btn" id="storiesBtn">📖 Show Stories</button>
+        <button class="stories-btn" id="storiesBtn" onclick="play()">📖 Show Stories</button>
         
         <div class="controls" id="controls">
             <div class="control-group">
@@ -247,13 +247,13 @@
                     position="0 0 0"
                     scale="150 150 150"
                     rotation="0 30 0"
-                    gltf-model="/Painted_Rock_rc7.glb"
+                    gltf-model="/Painted_Rock_rc10.glb"
                 ></a-entity>
                 
                 <a-entity id="frontTextGroup" position="0.189 1.75 0.645" rotation="10 -2.62 7.12" scale="0.5 0.5 0.5">
                 <a-text 
                     id="frontText"
-                    value="top_text"
+                    value="A millennium after Harald Bluetooth united Denmark and Norway, three industry leaders nokia, Intel and Ericsson met. During the meeting, Jim Kardach, having recently read about Viking history, had learned how Harald had unified Scandinavia and marked his achievement with the Jelling runestones. He proposed 'Bluetooth' as a placeholder name for the new wireless standard, intending to unite devices just as Harald united kingdoms. The iconic Bluetooth logo combines Harald's initials in ancient Norse bindrunes: ᚼ (H for Harald) and ᛒ (B for Bluetooth). The founding members of the Bluetooth Special Interest Group made pilgrimages to Jelling in 1998 and returned for the 25th anniversary in 2023, paying homage to their technology's namesake."
                     position="0.189 1.75 0.645"
                     roatation=" 10 -2.62 7.12"
                     align="center"
@@ -261,9 +261,11 @@
                     font="roboto"
                     width="4"
                     scale="0.5 0.5 0.5"
-                    geometry="primitive: plane; width: 5; height: 0.8"
-                    material="color: rgba(0,0,0,0.7); opacity: 0.99"
-                    visible="true">
+                    geometry="primitive: plane; width: 5; height: 3"
+                    material="color: rgba(0,0,0,0.7); opacity: 1"
+                    visible="true"
+                    text="zOffset: 0.02"
+                    >
                 </a-text>
 
                 <a-image src="#cornerTL" width="0.3" height="0.3" position="-2.4 0.35 0.02"></a-image>
@@ -275,23 +277,25 @@
                 <!-- Translation text for Left side -->
                 <a-text 
                     id="leftText"
-                    value="topish_text"
-                    position="1.175 1.75 -0.68"
+                    value="While Harald Bluetooth commissioned the stone, recent research reveals that Queen Thyra—Harald's mother—may have been the true architect of Danish unity. Thyra's name appears on four runestones across Denmark, more than any other individual from the Viking Age, including her husband King Gorm and her son Harald. The smaller Jelling stone, erected by Gorm around 950, calls Thyra 'Denmark's adornment' or 'Denmark's salvation'. Using 3D scanning technology, researchers discovered that the same runemaster, Ravnunge-Tue, carved both major Jelling stones and the Læborg stone 30 kilometers away, which reads: "Ravnunge-Tue carved these runes in memory of Thyra, his queen'. This connection proves all references point to the same powerful woman. Medieval historians described Thyra as wise, resourceful, and credited her with building the Danevirke defensive wall. She likely came from a more prestigious family than Gorm, and he may have been king only through marriage to her."
+                    position="1.85 1.75 -0.68"
                     align="center"
                     color="#FFD700"
                     font="roboto"
                     width="4"
                     scale="0.5 0.5 0.5"
                     rotation="-21 111 4.5"
-                    geometry="primitive: plane; width: 5; height: 0.8"
-                    material="color: rgba(0,0,0,0.7); opacity: 0.99"
-                    visible="true">
+                    geometry="primitive: plane; width: 5; height: 2.75"
+                    material="color: rgba(0,0,0,0.7); opacity: 1"
+                    visible="true"
+                    text="zOffset: 0.02"
+                    >
                 </a-text>
 
                 <!-- Translation text for Right side -->
                 <a-text 
                     id="rightText"
-                    value="toppest_text" 
+                    value="The Jelling Stone appears to capture a pivotal moment of religious transformation. Evidence suggests King Gorm the Old was buried in an oak chamber in the North Mound around 958-959, following what seem to be traditional pagan customs. His son Harald likely converted to Christianity around 960 and researchers believe he had his father's remains moved into a newly constructed wooden church between the mounds, possibly giving Gorm a Christian reburial. Harald then erected the great runestone with both Christian imagery and elements pagans could understand, potentially easing the population's transition to the new faith. The stone may have served as propaganda, announcing that the old ways were ending and a new Christian era had begun."
                     align="center"
                     color="#FFD700"
                     font="roboto"
@@ -299,9 +303,11 @@
                     scale="0.5 0.5 0.5"
                     rotation="-10 -170 15"
                     position="-0.27 1.75 -1"
-                    geometry="primitive: plane; width: 5; height: 0.8"
-                    material="color: rgba(0,0,0,0.7); opacity: 0.99"
-                    visible="true">
+                    geometry="primitive: plane; width: 5; height: 3.2"
+                    material="color: rgba(0,0,0,0.7); opacity: 1"
+                    visible="true"
+                    text="zOffset: 0.02"
+                    >
                 </a-text>
             </a-marker>
             <a-entity camera></a-entity>
@@ -348,6 +354,7 @@
             // Stories button
             const storiesBtn = document.querySelector('#storiesBtn');
             let storiesVisible = true;
+            var audio = new Audio('Star_Wars.mp3');
             
             // Default values
             const defaults = {
@@ -379,6 +386,15 @@
                 };
             }
             
+            function play() {
+            if (!storiesVisible){
+                // var audio = new Audio('Star_Wars.mp3');
+                audio.play();
+            } else{
+                audio.pause();
+                audio.currentTime = 0;
+            }
+            }
             // Toggle controls visibility
             toggleBtn.addEventListener('click', () => {
                 controls.style.display = controls.style.display === 'none' ? 'block' : 'none';
@@ -456,8 +472,7 @@
                 hideAllTranslations();
             });
             
-            // Stories button functionality
-            storiesBtn.addEventListener('click', () => {
+            function toggleStories() {
                 storiesVisible = !storiesVisible;
                 
                 // Toggle visibility instead of scale
@@ -483,8 +498,14 @@
                     leftBtn.classList.remove('active');
                     rightBtn.classList.remove('active');
                 }
+            }
+
+            // Stories button functionality
+            storiesBtn.addEventListener('click', () => {
+                toggleStories();
             });
-            
+            toggleStories();
+
             // Update model helper to also update text positions
             const updateModel = debounce(() => {
                 const scale = scaleSlider.value;
