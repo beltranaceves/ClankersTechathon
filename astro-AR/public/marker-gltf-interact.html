@@ -403,6 +403,10 @@
                 frontText.setAttribute('visible', false);
                 leftText.setAttribute('visible', false);
                 rightText.setAttribute('visible', false);
+                frontText.setAttribute('width', 0);
+                leftText.setAttribute('width', 0);
+                rightText.setAttribute('width', 0);
+
                 
                 // Remove active class from all buttons
                 document.querySelectorAll('.translation-btn').forEach(btn => {
@@ -443,20 +447,28 @@
             storiesBtn.addEventListener('click', () => {
                 storiesVisible = !storiesVisible;
                 
-                const newScale = storiesVisible ? textSizes.normal : textSizes.small;
-                
-                // Update all text elements scale
-                frontText.setAttribute('scale', newScale);
-                leftText.setAttribute('scale', newScale);
-                rightText.setAttribute('scale', newScale);
+                // Toggle visibility instead of scale
+                frontText.setAttribute('visible', storiesVisible);
+                leftText.setAttribute('visible', storiesVisible);
+                rightText.setAttribute('visible', storiesVisible);
                 
                 // Update button text and style
                 if (storiesVisible) {
-                    storiesBtn.textContent = '📖 Show Stories';
-                    storiesBtn.classList.remove('hidden');
-                } else {
                     storiesBtn.textContent = '📖 Hide Stories';
+                    storiesBtn.classList.remove('hidden');
+                    
+                    // Reactivate individual translation buttons if they were active before
+                    frontBtn.classList.add('active');
+                    leftBtn.classList.add('active');
+                    rightBtn.classList.add('active');
+                } else {
+                    storiesBtn.textContent = '📖 Show Stories';
                     storiesBtn.classList.add('hidden');
+                    
+                    // Remove active state from individual buttons when stories are hidden
+                    frontBtn.classList.remove('active');
+                    leftBtn.classList.remove('active');
+                    rightBtn.classList.remove('active');
                 }
             });
             
