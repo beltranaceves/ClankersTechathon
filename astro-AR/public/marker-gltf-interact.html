@@ -449,8 +449,7 @@
                 hideAllTranslations();
             });
             
-            // Stories button functionality
-            storiesBtn.addEventListener('click', () => {
+            function toggleStories() {
                 storiesVisible = !storiesVisible;
                 
                 // Toggle visibility instead of scale
@@ -476,8 +475,14 @@
                     leftBtn.classList.remove('active');
                     rightBtn.classList.remove('active');
                 }
+            }
+
+            // Stories button functionality
+            storiesBtn.addEventListener('click', () => {
+                toggleStories();
             });
-            
+            toggleStories();
+
             // Update model helper to also update text positions
             const updateModel = debounce(() => {
                 const scale = scaleSlider.value;
