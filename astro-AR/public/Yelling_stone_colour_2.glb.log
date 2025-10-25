@@ -42,7 +42,7 @@
 				<strData>0.00</strData>
 			</item>
 			<item>
-				<strData>0</strData>
+				<strData>1</strData>
 			</item>
 		</v2>
 	</WorkdataEvent>
@@ -74,12 +74,9 @@
 		<item>1</item>
 		<item>1</item>
 		<item>1</item>
-		<item>2</item>
+		<item>1</item>
 		<item>1</item>
 	</v2>
-</e>
-<e class_id_reference="2">
-	<Event></Event>
 </e>
 <e class_id_reference="2">
 	<Event></Event>
@@ -576,7 +573,7 @@
 				<strData>false</strData>
 			</item>
 			<item>
-				<strData>0.05</strData>
+				<strData>0.12</strData>
 			</item>
 			<item>
 				<strData>6</strData>
