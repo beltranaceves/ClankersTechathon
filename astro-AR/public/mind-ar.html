@@ -1,0 +1,23 @@
+
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+  </head>
+  <body>
+    <a-scene mindar-image="imageTargetSrc: https://cdn.easycdn.co/68fcd32d5ec585469fd8f0df/901ff681-6d2e-479f-be98-86690f56c822.;" color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+      <a-assets>
+	<img id="card" src="https://cdn.easycdn.co/68fcd32d5ec585469fd8f0df/070867cb-540e-4642-90bb-6849a1bbaea2.png" />
+	<a-asset-item id="avatarModel" src="Painted_Rock_rc1.glb"></a-asset-item>
+      </a-assets>
+
+      <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+      <a-entity mindar-image-target="targetIndex: 0">
+        <a-gltf-model rotation="0 0 0 " position="0 0 0" scale="100 100 100" src="#avatarModel"
+        >
+      </a-entity>
+    </a-scene>
+  </body>
+</html>
