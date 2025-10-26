@@ -1,9 +1,12 @@
 
 ## Inspiration
-Seeing the monumental Runestone, birth certificate of Denmark and centerpiece of the museum and it's 3d restored counterpart we wanted to render possible living both experiences at the same time.
+Seeing the monumental Runestone, the birth certificate of Denmark and the centrepiece of the museum, and its 3d restored counterpart. We wanted to bring the beauty of the render to the original experience at  the same time, whilst also giving more information about the inspiring history of the rock.
 
 ## What it does
-We are using AR markers to project in the real world a 3D model we made mimicking the model we saw at the museum showcase. Used to overlap the real one to show how it was
+We are using AR markers to project in a recreated a 3D model of how the stone would have originally looked. We took inspritation from the 3d render from shown in the museum, with the idea of overlapping the painted model over the real rock.
+
+![walk_round_stone](https://github.com/user-attachments/assets/0a7ac044-d57b-4631-aa5b-8eb21231d63c)
+
 
 ## How we built it
 We built it using Aframe, cloudfare, Astro and AR.JS
