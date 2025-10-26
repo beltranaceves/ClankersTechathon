@@ -5,6 +5,9 @@ Seeing the monumental Runestone, birth certificate of Denmark and centerpiece of
 ## What it does
 We are using AR markers to project in the real world a 3D model we made mimicking the model we saw at the museum showcase. Used to overlap the real one to show how it was
 
+![walk_round_stone](https://github.com/user-attachments/assets/0a7ac044-d57b-4631-aa5b-8eb21231d63c)
+
+
 ## How we built it
 We built it using Aframe, cloudfare, Astro and AR.JS
 
